@@ -76,6 +76,7 @@ function convert() {
   fi
 
   ## setup llama.cpp
+  cd /tmp
   git clone https://github.com/ggerganov/llama.cpp.git
   cd llama.cpp
   python3 -m venv .venv
@@ -107,6 +108,7 @@ function quantize() {
   fi
 
   ## Quantize the gguf model files to bin
+  cd /tmp/llama.cpp
   ./llama-quantize /tmp/models/Qwen2.5-0.5b-f16.gguf /tmp/models/MyQwen-model-Q4_K_M.bin Q4_K_M
   
   echo "Model Quantization was successful."
