@@ -1,0 +1,47 @@
+LOCAL TASKS (RUN THESE ON YOUR LOCAL MACHINE)
+=============================================
+
+mkdir labs
+
+cd labs
+
+python -m venv .env
+
+source .env/bin/activate (Activate Python virtual env for linux/mac)
+
+.env/Scripts/activate (Activate Python virtual env for windows)
+
+pip install --upgrade huggingface_hub
+
+git clone git@gitlab.com:edgelarbs/envsetup.git
+
+cd envsetup
+
+chmod 755 setup-nix.sh
+
+./setup-nix.sh (Run the tasks 1, 2, and 3.)
+
+git config --global credential.helper store (make sure git is installed)
+
+huggingface-cli login (use your access token to login)
+
+huggingface-cli download Qwen/Qwen2.5-0.5B --local-dir “/tmp/models" --include "*"
+
+docker run --rm -v "/tmp/models":/repo ghcr.io/ggerganov/llama.cpp:full --convert "/repo" --outtype f16
+
+docker run --rm -v "/tmp/models":/repo ghcr.io/ggerganov/llama.cpp:full --quantize "/repo/<FILE-NAME>.gguf" "/repo/MyQwen-model-Q4_K_M.bin" "Q4_K_M" (USE THE GGUF FILE NAME FROM THE OUTPUT OF THE COMMAND ABOVE)
+
+cp /tmp/models/MyQwen-model-Q4_K_M.bin ~/ollama
+
+
+DOCKER CONTAINER TASKS (RUN THESE FROM WITHING THE CONTAINER)
+=============================================================
+docker exec -it my-open-webui bash
+
+mkdir /app/backend/models
+
+mv /root/.ollama/*.bin /app/backend/models
+
+echo "FROM /app/backend/models/MyQwen-model-Q4_K_M.bin" > “/app/backend/models/modelfile"
+
+ollama create "MyQwen-v0.1:0.5b” -f “/app/backend/models/modelfile"

@@ -1,0 +1,41 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  OLLAMA_API_KEY: $OLLAMA_API_KEY
+  OLLAMA_SERVER_URL: $OLLAMA_SERVER_URL
+  HG_UF_MODEL: Qwen/Qwen2.5-0.5B
+  HF_ACCESS_TOKEN: $HF_ACCESS_TOKEN
+
+build:
+  stage: build
+  image: ubuntu:latest
+  before_script:
+    - apt update
+    - apt install -y python3 python3-pip python3-venv git make gcc g++ cmake
+    - pip3 install --no-cache --upgrade huggingface_hub --break-system-packages
+    - mkdir -p /root/models
+  script:
+    - git config --global credential.helper store
+    - huggingface-cli login --token $HF_ACCESS_TOKEN --add-to-git-credential
+    - huggingface-cli download $HG_UF_MODEL --local-dir "/root/models" --include "*"
+    - ls -ltr /root/models
+    - git clone https://github.com/ggerganov/llama.cpp.git
+    - cd llama.cpp
+    - python3 -m venv .venv
+    - . .venv/bin/activate
+    - make
+    - pip3 install --upgrade pip wheel setuptools
+    - pip3 install --upgrade -r requirements.txt
+    - python3 convert_hf_to_gguf.py /root/models --outfile /root/models/Qwen2.5-0.5b-f16.gguf --outtype f16
+    - ./llama-quantize /root/models/Qwen2.5-0.5b-f16.gguf /root/models/MyQwen-model-Q4_K_M.bin Q4_K_M
+    - echo "Add code to copy the generated binary file to you artifact repo"
+    - echo "Build Completed"
+
+deploy:
+  stage: deploy
+  before_script:
+    - echo "Add all yopur deploy steps here"
+  script:
+    - echo "Deploy Completed"
