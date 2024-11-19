@@ -75,16 +75,6 @@ function convert() {
     main
   fi
 
-  ## setup llama.cpp
-  cd /tmp
-  git clone https://github.com/ggerganov/llama.cpp.git
-  cd llama.cpp
-  python3 -m venv .venv
-  . .venv/bin/activate
-  make
-  pip3 install --upgrade pip wheel setuptools
-  pip3 install --upgrade -r requirements.txt
-
   ## Converting the hg model files to gguf format
   touch /tmp/models/Qwen2.5-0.5b-f16.gguf
   docker run --rm -v "/tmp/models":/repo ghcr.io/ggerganov/llama.cpp:full --convert "/repo" --outfile "/repo/Qwen2.5-0.5b-f16.gguf" --outtype f16
