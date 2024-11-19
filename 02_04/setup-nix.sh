@@ -40,6 +40,12 @@ function setup() {
     echo "Ollama/Open-webui container is setup successfully. Access your setup by going to http://localhost:3001"
     echo 'To access the container command line interface, run "docker exec -it my-open-webui bash"'
   fi
+
+  # Pull github project repo
+  echo "Pulling the GitHub repo for this course"
+  cd /tmp
+  git clone https://github.com/LinkedInLearning/generative-ai-at-the-edge-design-deploy-and-optimize-generative-ai-models-3807083.git
+  echo "Git clone completed"
 }
 
 # Function to test Ollama/Open-webui docker container
